@@ -16,12 +16,13 @@ arguments:
       --javaOptions "-Xms3000m"
       -O $(inputs.output_report_filename)
 inputs:
-  input_bqsr_reports: array
-    items: File
+  input_bqsr_reports:
+    type: File[]
     inputBinding:
       prefix: "-I"
 
 outputs:
-  output_report: File
+  output_report:
+    type: File
     outputBinding:
       glob: "*.csv"

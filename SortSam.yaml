@@ -13,7 +13,7 @@ requirements:
 
 # Sort BAM file by coordinate order and fix tag values for NM and UQ
 baseCommand: [java, -Dsamjdk.compression_level=2, -jar, /picard.jar]
-argument:
+arguments:
   - position: 0
     shellQuote: false
     valueFrom: >-
@@ -27,13 +27,13 @@ argument:
 
 inputs:
   input_bam:
-    type:File
+    type: File
   output_bam:
-    type:string
+    type: string
 
 outputs:
-  output_sorted_bam
-    type:File
-    secondaryFiles:[^.bai, ^.bam.md5]
+  output_sorted_bam:
+    type: File
+    secondaryFiles: [^.bai, ^.bam.md5]
     outputBinding:
-      glob:["*.bam", "*.bai",*.md5]
+      glob: ["*.bam", "*.bai", "*.md5"]

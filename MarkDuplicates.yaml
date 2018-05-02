@@ -6,7 +6,7 @@ requirements:
   - class: ShellCommandRequirement
   - class: ScatterFeatureRequirement
   - class: DockerRequirement
-    dockerPull: <docker>
+    dockerPull: us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.3.2-151068113
 
 # Mark duplicate reads to avoid counting non-independent observations
 baseCommand: [java, -Xms4000m, -jar, /picard.jar, MarkDuplicates]

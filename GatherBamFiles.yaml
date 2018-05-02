@@ -18,8 +18,8 @@ arguments:
       CREATE_INDEX = true
       CREATE_MD5_FILE = true
 inputs:
-  input_bam: array
-    items: File
+  input_bam:
+    type: File[]
     inputBinding:
       prefix: INPUT=
   output_Bam: string
@@ -28,4 +28,4 @@ outputs:
     type: File
     outputBinding:
       glob: "*.bam"
-    secondaryFile:[^.bai,^.md5]
+    secondaryFiles: [^.bai,^.md5]

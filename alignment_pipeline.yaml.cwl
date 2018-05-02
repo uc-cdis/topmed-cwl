@@ -9,7 +9,7 @@ inputs:
   indexed_reference_fasta:
     type: File
     secondaryFiles: [.64.amb, .64.ann, .64.bwt, .64.pac, .64.sa, .64.alt,
-    ^.dict, .amb, .ann, .bwt, .pac, .sa, .fai]
+    ^.dict, .fai]
   output_basename: string
   read_name_regex: string?
   sequence_grouping_tsv: File[]
@@ -106,7 +106,7 @@ steps:
     scatter: [sequence_interval]
     out: [recalibrated_bam]
 
-    GatherBamFiles:
+  GatherBamFiles:
       run: ../tasks/GatherBamFiles.yaml
       in:
         input_bam: ApplyBQSR/recalibrated_bam
@@ -114,7 +114,7 @@ steps:
         compression_level: compression_level
       out: [output]
 
-    ConvertToCram:
+  ConvertToCram:
       run: ../tasks/ConvertToCram.yaml
       in:
         reference: indexed_reference_fasta

@@ -10,7 +10,7 @@ requirements:
 
 # Mark duplicate reads to avoid counting non-independent observations
 baseCommand: [java, -Xms4000m, -jar, /picard.jar, MarkDuplicates]
-argument:
+arguments:
   - position: 1
     shellQuote: false
     valueFrom: >-
@@ -24,14 +24,12 @@ argument:
       READ_NAME_REGEX=$(inputs.read_name_regex)
 
 inputs:
-  input_bams
-    type:
-      type: array
-      items: File
-      format: "edam:format_2572"
-      inputBinding:
-        prefix: INPUT=
-        seperate: false
+  input_bams:
+    type: File[]
+    format: "edam:format_2572"
+    inputBinding:
+      prefix: INPUT=
+      separate: false
   output_bam: string
   metrics_filename: string
   read_name_regex: string?
@@ -42,6 +40,6 @@ outputs:
     outputBinding:
       glob: "*.bam"
   output_markduplicates_metrics:
-    type:File
+    type: File
     outputBinding:
-      glob:"*.txt"
+      glob: "*.txt"

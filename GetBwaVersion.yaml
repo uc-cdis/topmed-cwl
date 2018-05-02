@@ -6,7 +6,7 @@ class: CommandLineTool
 requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: <docker>
+    dockerPull: us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.3.2-1510681135
 
 inputs:
   []
@@ -30,5 +30,3 @@ arguments:
   - valueFrom: "'s/Version: //'"
     position: 5
 
-outputBinding:
-      glob: uuid

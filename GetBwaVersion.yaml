@@ -16,8 +16,11 @@ outputs:
     version:
         type: stdout
 
-baseCommand: ['/usr/gitc/bwa', '2>&1']
+baseCommand: ['/usr/gitc/bwa']
 arguments:
+  - valueFrom: "2>&1"
+    position: 1
+    shellQuote: False
   - valueFrom: "grep"
     position: 2
     prefix: "|"

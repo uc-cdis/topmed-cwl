@@ -9,7 +9,7 @@ requirements:
   - class: ResourceRequirement
     ramMin: 5000
   - class: DockerRequirement
-    dockerPull: <docker>
+    dockerPull: us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.3.2-151068113
 
 # Sort BAM file by coordinate order and fix tag values for NM and UQ
 baseCommand: [java, -Dsamjdk.compression_level=2, -jar, /picard.jar]

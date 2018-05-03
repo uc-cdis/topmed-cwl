@@ -6,7 +6,7 @@ requirements:
   - class: ShellCommandRequirement
   - class: ScatterFeatureRequirement
   - class: DockerRequirement
-    dockerPull: <docker>
+    dockerPull: us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.3.2-151068113
   - class: ResourceRequirement
     ramMin: 6000
 # Generate Base Quality Score Recalibration (BQSR) model, save recalibration_report_filename in csv format

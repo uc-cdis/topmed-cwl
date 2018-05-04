@@ -9,7 +9,7 @@ requirements:
     dockerPull: us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.3.2-1510681135
 
 # Mark duplicate reads to avoid counting non-independent observations
-baseCommand: [java, -Xms4000m, -jar, /picard.jar, MarkDuplicates]
+baseCommand: [java, -Xms4000m, -jar, /usr/gitc/picard.jar, MarkDuplicates]
 arguments:
   - position: 1
     shellQuote: false

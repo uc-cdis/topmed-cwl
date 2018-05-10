@@ -5,27 +5,32 @@ requirements:
   - class: ShellCommandRequirement
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.3.2-151068113
+    dockerPull: us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.3.2-1510681135
   - class: ResourceRequirement
     ramMin: 3500
-baseCommand: [java, -Xms2000m, -jar, /picard.jar]
+baseCommand: [java, -Dsamjdk.compression_level=2, -Xms2000m, -jar, /usr/gitc/picard.jar]
 arguments:
   - position: 0
     shellQuote: false
     valueFrom: >-
-      -Dsamjdk.compression_level=2
-      OUTPUT = $(input.output_bam)
-      CREATE_INDEX = true
-      CREATE_MD5_FILE = true
+      GatherBamFiles
+      OUTPUT=$(inputs.output_bam_name)
+      CREATE_INDEX=false
+      CREATE_MD5_FILE=true
+
 inputs:
   input_bam:
-    type: File[]
-    inputBinding:
-      prefix: INPUT=
-  output_Bam: string
+    type:
+      type: array
+      items: File
+      inputBinding:
+        prefix: INPUT=
+        separate: false
+  output_bam_name: string
+
 outputs:
   output_bam:
     type: File
     outputBinding:
       glob: "*.bam"
-    secondaryFiles: [^.bai,^.md5]
+    secondaryFiles: [^.bam.md5]

@@ -4,6 +4,8 @@ cwlVersion: v1.0
 
 class: CommandLineTool
 
+id: sortsam
+
 requirements:
   - class: ShellCommandRequirement
   - class: ResourceRequirement
@@ -23,7 +25,7 @@ arguments:
       SORT_ORDER="coordinate"
       CREATE_INDEX=true
       CREATE_MD5_FILE=true
-      MAX_RECORDS_IN_RAM=300000
+      MAX_RECORDS_IN_RAM=300000 
 
 inputs:
   input_bam:
@@ -33,7 +35,9 @@ inputs:
 
 outputs:
   output_sorted_bam:
-    type: File[]
-    secondaryFiles: [^.bai, ^.bam.md5]
+    type: File
     outputBinding:
-      glob: ["*.bam", "*.bai", "*.md5"]
+      glob: "*.bam"
+    secondaryFiles:
+      - ^.bai
+      - .md5

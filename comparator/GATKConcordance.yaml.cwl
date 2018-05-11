@@ -3,8 +3,9 @@
 cwlVersion: v1.0
 
 class: CommandLineTool
-doc: GATK Concordance tool to compare overlapping variants in two VCFs.
-id: baserecalibrator
+doc: |
+    GATK Concordance tool to compare overlapping variants in two VCFs.
+id: GATKConcordance
 
 requirements:
   - class: ShellCommandRequirement

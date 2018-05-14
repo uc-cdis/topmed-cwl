@@ -19,7 +19,7 @@ inputs:
 
 outputs:
   - id: flag
-    type: int
+    type: boolean
 
 expression: |
   ${

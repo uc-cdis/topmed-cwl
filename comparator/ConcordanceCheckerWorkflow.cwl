@@ -40,10 +40,6 @@ outputs:
     type: File
     outputSource: GATKConcordance/concordance_summary
 
-  - id: flag
-    type: boolean
-    outputSource: ConcordanceChecker/flag
-
 steps:
 
   - id: GATKConcordance
@@ -69,5 +65,4 @@ steps:
        - id: threshold
          source: threshold
 
-    out:
-       - id: flag
+    out: []

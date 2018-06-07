@@ -40,6 +40,7 @@ inputs:
     type: File
     secondaryFiles: [^.gz.tbi]
   compression_level: int
+  expected_num_reads: int
 
 outputs:
   duplicates_marked_bam:

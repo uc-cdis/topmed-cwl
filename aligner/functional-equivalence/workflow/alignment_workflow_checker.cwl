@@ -40,6 +40,7 @@ inputs:
     type: File
     secondaryFiles: [^.gz.tbi]
   compression_level: int
+  expected_num_reads: int
 
 outputs:
   duplicates_marked_bam:
@@ -172,3 +173,9 @@ steps:
       input_bam: SortBam/output_sorted_bam
     out: [output]
 
+   Checker:
+    run: ../tasks/checker.yaml
+    in:
+      cram: ConvertToCram/output
+      expected_num_reads: expected_num_reads
+    out: []

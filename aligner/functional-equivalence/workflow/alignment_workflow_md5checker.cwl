@@ -14,11 +14,13 @@ doc: |
     - Reference genome must be Hg38 with ALT contigs
 
 class: Workflow
-id: alignment_pipeline
+id: alignment_pipeline_md5checker
 requirements:
   - class: ScatterFeatureRequirement
   - class: InlineJavascriptRequirement
   - class: StepInputExpressionRequirement
+  - class: SubworkflowFeatureRequirement
+
 inputs:
   input_bams:
     type: File[]
@@ -40,136 +42,50 @@ inputs:
     type: File
     secondaryFiles: [^.gz.tbi]
   compression_level: int
-  expected_num_reads: int
+  refcram: File
 
 outputs:
   duplicates_marked_bam:
     type: File
-    outputSource: MarkDuplicates/output_markduplicates_bam
+    outputSource: alignment_pipeline/duplicates_marked_bam
   duplicates_marked_metrics:
     type: File
-    outputSource: MarkDuplicates/output_markduplicates_metrics
+    outputSource: alignment_pipeline/duplicates_marked_metrics
   sorted_bam:
     type: File
-    outputSource: SortSam/output_sorted_bam
+    outputSource: alignment_pipeline/sorted_bam
   bqsr_reports:
     type: File
-    outputSource: GatherBqsrReports/output_report
+    outputSource: alignment_pipeline/bqsr_reports
   bqsr_bam:
     type: File
-    outputSource: SortBam/output_sorted_bam
+    outputSource: alignment_pipeline/bqsr_bam
   cramfile:
     type: File
-    outputSource: ConvertToCram/output
+    outputSource: alignment_pipeline/cramfile
+  check:
+    type: int
+    outputSource: checker_md5/check
 
 steps:
-  GetBwaVersion:
-    run: ../tasks/GetBwaVersion.yaml
-    in: []
-    out: [version]
-
-  SamToFastqAndBwaMemAndMba:
-    run: ../tasks/SamToFastqAndBwaMemAndMba.yaml
-    scatter: [input_bam]
+  alignment_pipeline:
+    run: ./alignment_workflow.cwl
     in:
-      input_bam: input_bams
+      input_bams: input_bams
       indexed_reference_fasta: indexed_reference_fasta
-      bwa_version: GetBwaVersion/version
-    out:
-      [output]
-
-  MarkDuplicates:
-    run: ../tasks/MarkDuplicates.yaml
-    in:
-      input_bams: SamToFastqAndBwaMemAndMba/output
-      output_bam:
-        source: output_basename
-        valueFrom: $(self + "_markdup.bam")
-      metrics_filename:
-        source: output_basename
-        valueFrom: $(self + "_markdup.txt")
+      output_basename: output_basename
       read_name_regex: read_name_regex
-    out: [output_markduplicates_bam, output_markduplicates_metrics]
-
-  SortSam:
-    run: ../tasks/SortSam.yaml
-    in:
-      input_bam: MarkDuplicates/output_markduplicates_bam
-      output_bam:
-        source: output_basename
-        valueFrom: $(self + "_markdup_sort.bam")
-    out: [output_sorted_bam]
-
-  CreateSequenceGroupingTSV:
-    run: ../tasks/CreateSequenceGroupingTSV.yaml
-    in:
       script: script
       ref_dict: ref_dict
-    out: [groups]
-
-  Expression_createsequencegrouping:
-    run: ../tasks/Expression_createsequencegrouping.yaml
-    in:
-      sequence_grouping_with_unmapped_tsv: CreateSequenceGroupingTSV/groups
-    out: [sequence_grouping_array]
-
-  BaseRecalibrator:
-    run: ../tasks/BaseRecalibrator.yaml
-    in:
-      input_bam: SortSam/output_sorted_bam
       known_indels_sites_VCFs: known_indels_sites_VCFs
       dbSNP_vcf: dbSNP_vcf
-      ref_fasta: indexed_reference_fasta
-      sequence_group_interval: Expression_createsequencegrouping/sequence_grouping_array
-    scatter: [sequence_group_interval]
-    out: [recalibration_report]
-
-  GatherBqsrReports:
-    run: ../tasks/GatherBqsrReports.yaml
-    in:
-      input_bqsr_reports: BaseRecalibrator/recalibration_report
-      output_report_filename:
-        source: output_basename
-        valueFrom: $(self + "BqsrReports.csv")
-    out: [output_report]
-
-  ApplyBQSR:
-    run: ../tasks/ApplyBQSR.yaml
-    in:
       compression_level: compression_level
-      ref_fasta: indexed_reference_fasta
-      input_bam: SortSam/output_sorted_bam
-      output_bam:
-        source: output_basename
-        valueFrom: $(self + "_Bqsr.seg.bam")
-      recalibration_report: GatherBqsrReports/output_report
-      sequence_group_interval: Expression_createsequencegrouping/sequence_grouping_array
-    scatter: [sequence_group_interval]
-    out: [recalibrated_bam]
+    out: [duplicates_marked_bam, duplicates_marked_metrics, sorted_bam, bqsr_reports, bqsr_bam, cramfile]
 
-  GatherBamFiles:
-    run: ../tasks/GatherBamFiles.yaml
-    in:
-      input_bam: ApplyBQSR/recalibrated_bam
-      output_bam_name:
-        source: output_basename
-        valueFrom: $(self + "_Bqsr.bam")
-      compression_level: compression_level
-    out: [output_bam]
-
-  SortBam:
-    run: ../tasks/SortSam.yaml
-    in:
-      input_bam: GatherBamFiles/output_bam
-      output_bam:
-        source: output_basename
-        valueFrom: $(self + "_BQSR.sort.bam")
-    out: [output_sorted_bam]
-
-  ConvertToCram:
-    run: ../tasks/ConvertToCram.yaml
-    in:
-      reference: indexed_reference_fasta
-      input_bam: SortBam/output_sorted_bam
-    out: [output]
-
+  checker_md5:
+      run: ./checker_md5.yaml.cwl
+      in:
+        refcram: refcram
+        reference: indexed_reference_fasta
+        cram: alignment_pipeline/cramfile
+      out: [check]
